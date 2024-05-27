@@ -1,0 +1,31 @@
+{
+  "name": "file-fusion",
+  "version": "1.0.0",
+  "description": "Projeto para união de múltiplos arquivos PDF em um único só.",
+  "scripts": {
+    "dev": "turbo dev --parallel",
+    "build": "turbo build --parallel"
+  },
+  "turbo": {
+    "pipeline": {
+      "dev": {
+        "cache": false
+      },
+      "build": {
+        "dependsOn": [
+          "^build"
+        ],
+        "outputs": [
+          ".next/**",
+          "dist/**"
+        ]
+      }
+    }
+  },
+  "keywords": [],
+  "author": "João Victor",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "turbo": "^1.13.3"
+  }
+}
