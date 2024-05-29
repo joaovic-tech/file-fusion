@@ -1,5 +1,15 @@
+import Nav from "./components/nav";
+import SelectFile from "./components/select-file";
+
 function App() {
-  return <h1>Olá mundo!!!</h1>;
+  return (
+    <>
+      <Nav />
+      <main className="mx-24 mt-12">
+        <SelectFile />
+      </main>
+    </>
+  );
 }
 
 export default App;
