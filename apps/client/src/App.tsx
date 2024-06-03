@@ -5,7 +5,7 @@ function App() {
   return (
     <>
       <Nav />
-      <main className="mx-24 mt-12">
+      <main className="flex items-center justify-center mt-12">
         <SelectFile />
       </main>
     </>

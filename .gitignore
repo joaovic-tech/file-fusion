@@ -3,3 +3,7 @@ node_modules
 .next
 .dist
 .vscode
+__pycache__
+.idea
+uploads
+venv
