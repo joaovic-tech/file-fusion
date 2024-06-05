@@ -2,6 +2,7 @@ import os
 from PyPDF2 import PdfMerger
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
@@ -47,4 +48,4 @@ async def upload_file(files: list[UploadFile] = File(...)):
         os.remove(output_filename)
     merge_pdfs(UPLOAD_DIR, output_filename)
 
-    return {"info": f"files merged and saved at '{output_filename}'"}
+    return FileResponse(output_filename, media_type='application/pdf', filename='arquivo_mesclado.pdf')
