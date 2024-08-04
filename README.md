@@ -7,7 +7,7 @@ Projeto para unir múltiplos arquivos PDF em um único arquivo, utilizando uma a
 # O que falta?
 
 - [x] Criar um servidor para hospedar o `frontend`
-- [ ] Criar um servidor para hospedar o `backend`
+- [x] Criar um servidor para hospedar o `backend`
 
 ## Objetivo Principal
 

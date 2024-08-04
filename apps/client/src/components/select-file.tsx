@@ -82,7 +82,7 @@ function SelectFile() {
 
     try {
       const response = await fetch(
-        "https://file-fusion-server.vercel.app//upload",
+        "https://file-fusion-server.vercel.app/upload",
         {
           method: "POST",
           body: formData,
