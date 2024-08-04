@@ -14,7 +14,10 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 # Configuração de CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Altere para a origem do seu frontend
+    allow_origins=[
+        "http://localhost:5173",
+        "https://file-fusion-client.vercel.app/",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
