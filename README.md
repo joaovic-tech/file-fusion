@@ -2,13 +2,6 @@
 
 Projeto para unir múltiplos arquivos PDF em um único arquivo, utilizando uma aplicação web em React + TypeScript e um backend em Python com FastAPI.
 
----
-
-# O que falta?
-
-- [x] Criar um servidor para hospedar o `frontend`
-- [x] Criar um servidor para hospedar o `backend`
-
 ## Objetivo Principal
 
 - Agrupar certos arquivos em formato PDF em um único arquivo PDF.

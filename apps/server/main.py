@@ -1,10 +1,9 @@
-import os
-
-from PyPDF2 import PdfMerger
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+import os
+from PyPDF2 import PdfMerger
 
 app = FastAPI()
 
@@ -16,7 +15,9 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://file-fusion-client.vercel.app",
-        "http://localhost:5173",
+        "https://file-fusion-client-git-main-joaovictechs-projects.vercel.app",
+        "https://file-fusion-client-q1xyvpugq-joaovictechs-projects.vercel.app",
+        "http://localhost:5173",  # Para desenvolvimento local
     ],
     allow_credentials=True,
     allow_methods=["*"],
