@@ -5,7 +5,6 @@ import { Button } from "./ui/button";
 import { LoaderCircle, Trash2 } from "lucide-react";
 import BtnRemoveMergedFile from "./btn-remove-merged-file";
 import Message from "./message";
-import { text } from "stream/consumers";
 
 function SelectFile() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
