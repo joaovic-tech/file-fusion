@@ -16,7 +16,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://file-fusion-client.vercel.app/",
+        "https://file-fusion-client.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
