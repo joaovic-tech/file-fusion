@@ -8,6 +8,13 @@
         "maxLambdaSize": "15mb",
         "runtime": "python3.9"
       }
+    },
+    {
+      "src": "apps/client/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "apps/client/dist"
+      }
     }
   ],
   "routes": [
