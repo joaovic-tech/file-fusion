@@ -6,7 +6,7 @@ export default function ServerStatus() {
   useEffect(() => {
     const serverOn = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000");
+        const response = await fetch("https://file-fusion-server.vercel.app");
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
