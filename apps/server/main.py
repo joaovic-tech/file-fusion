@@ -4,6 +4,7 @@ from PyPDF2 import PdfMerger
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
@@ -19,13 +20,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.mount("/static", StaticFiles(directory="public"), name="static")
+
+
 @app.get("/")
 async def root():
     return {"message": "Api do FileFusion"}
 
 
 def merge_pdfs(input_folder, output_filename):
-    pdf_files = [file for file in os.listdir(input_folder) if file.endswith('.pdf')]
+    pdf_files = [file for file in os.listdir(input_folder) if file.endswith(".pdf")]
     pdf_files.sort()
 
     pdf_merger = PdfMerger()
@@ -33,14 +37,15 @@ def merge_pdfs(input_folder, output_filename):
     for pdf_file in pdf_files:
         pdf_merger.append(os.path.join(input_folder, pdf_file))
 
-    with open(output_filename, 'wb') as output_file:
+    with open(output_filename, "wb") as output_file:
         pdf_merger.write(output_file)
 
-    print(f'Arquivos PDF mesclados com sucesso em {output_filename}')
+    print(f"Arquivos PDF mesclados com sucesso em {output_filename}")
 
     # Remover arquivos individuais
     for pdf_file in pdf_files:
         os.remove(os.path.join(input_folder, pdf_file))
+
 
 @app.post("/upload")
 async def upload_file(files: list[UploadFile] = File(...)):
@@ -54,4 +59,6 @@ async def upload_file(files: list[UploadFile] = File(...)):
         os.remove(output_filename)
     merge_pdfs(UPLOAD_DIR, output_filename)
 
-    return FileResponse(output_filename, media_type='application/pdf', filename='arquivo_mesclado.pdf')
+    return FileResponse(
+        output_filename, media_type="application/pdf", filename="arquivo_mesclado.pdf"
+    )
