@@ -13,12 +13,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 # Configuração de CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://file-fusion-client.vercel.app",
-        "https://file-fusion-client-git-main-joaovictechs-projects.vercel.app",
-        "https://file-fusion-client-q1xyvpugq-joaovictechs-projects.vercel.app",
-        "http://localhost:5173",  # Para desenvolvimento local
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
