@@ -1,14 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
 import { Separator } from "@radix-ui/react-separator";
 import { Button } from "./ui/button";
 import { LoaderCircle, Trash2 } from "lucide-react";
 import BtnRemoveMergedFile from "./btn-remove-merged-file";
+import Message from "./message";
+import { text } from "stream/consumers";
 
 function SelectFile() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [mergedFile, setMergedFile] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<{
+    text: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  // Limpa a mensagem após a animação de saída
+  useEffect(() => {
+    if (alertMessage) {
+      const timer = setTimeout(() => {
+        setAlertMessage(null);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [alertMessage]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -23,7 +40,10 @@ function SelectFile() {
     if (uniqueFiles.length > 0) {
       setSelectedFiles((prevFiles) => [...prevFiles, ...uniqueFiles]);
     } else {
-      console.log("Não pode adicionar arquivo com mesmo nome ou igual");
+      setAlertMessage({
+        text: "Não pode adicionar arquivo com mesmo nome ou igual",
+        type: "error",
+      });
     }
   };
 
@@ -47,8 +67,11 @@ function SelectFile() {
     setLoading(true);
 
     event.preventDefault();
-    if (selectedFiles.length >= 0) {
-      console.log("Selecione um ou mais arquivo primeiro!");
+    if (selectedFiles.length <= 1) {
+      setAlertMessage({
+        text: "Selecione um ou mais arquivo primeiro!",
+        type: "error",
+      });
       setLoading(false);
       return;
     }
@@ -68,11 +91,22 @@ function SelectFile() {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         setMergedFile(url);
-        console.log("Arquivo PDF mesclado baixado com sucesso");
+        setAlertMessage({
+          text: "Arquivo PDF mesclado com sucesso!",
+          type: "success",
+        });
       } else {
+        setAlertMessage({
+          text: "Desculpe, algo deu errado no upload!",
+          type: "error",
+        });
         console.error("Falha no upload dos arquivos");
       }
     } catch (error) {
+      setAlertMessage({
+        text: "Desculpe, algo deu errado no upload!",
+        type: "error",
+      });
       console.error("Erro ao enviar arquivos:", error);
     } finally {
       setLoading(false);
@@ -87,8 +121,11 @@ function SelectFile() {
 
   return (
     <>
+      {alertMessage && (
+        <Message text={alertMessage.text} typeMessage={alertMessage.type} />
+      )}
       {loading ? (
-        <div className="flex flex-col items-center justify-between w-11/12 py-6 border rounded-md gap-36 h-4/5">
+        <div className="flex flex-col items-center justify-between w-11/12 py-6 rounded-md gap-36 h-4/5">
           <div className="w-40 border rounded-sm h-60 bg-gradient-to-t dark:from-zinc-800 from-zinc-400 to-transparent animate-pulse"></div>
           <div className="flex flex-col items-center">
             <LoaderCircle className="w-12 h-12 animate-spin" />
@@ -131,12 +168,12 @@ function SelectFile() {
           {selectedFiles.length > 0 && (
             <>
               <Separator className="my-10 bg-border h-[1px]" />
-              <div className="relative grid items-center justify-center w-full gap-8 py-10 border rounded-md">
+              <div className="relative flex flex-col items-center justify-center w-full gap-8 p-10 border rounded-md">
                 <BtnRemoveMergedFile
                   setMergedFile={setMergedFile}
                   setSelectedFiles={setSelectedFiles}
                 />
-                <ul className="flex flex-wrap gap-10 m-auto">
+                <ul className="flex flex-wrap items-center justify-center gap-10">
                   {selectedFiles.map((file, index) => (
                     <li
                       key={index}
@@ -146,7 +183,7 @@ function SelectFile() {
                         {file.name}
                       </span>
                       <span
-                        className="absolute p-1 bg-red-600 rounded-full shadow-md cursor-pointer -top-2 -right-2 hover"
+                        className="absolute p-1 bg-red-600 rounded-full shadow-md cursor-pointer -top-2 -right-2 hover:bg-red-700"
                         onClick={() => removeFile(file)}
                       >
                         <Trash2 />
@@ -158,10 +195,7 @@ function SelectFile() {
                     </li>
                   ))}
                 </ul>
-                <Button
-                  type="submit"
-                  className="m-auto text-xl font-bold h-14 w-72"
-                >
+                <Button type="submit" className="text-xl font-bold h-14 w-72">
                   Finalizar
                 </Button>
               </div>

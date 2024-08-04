@@ -19,6 +19,7 @@ const BtnRemoveMergedFile: React.FC<BtnRemoveMergedFileProps> = ({
     <button
       onClick={removeMergedFile}
       className="absolute top-0 right-0 px-2 py-2 bg-transparent text-zinc-950 hover:text-zinc-400 dark:text-zinc-50"
+      title="Voltar"
     >
       <RotateCcw />
     </button>
