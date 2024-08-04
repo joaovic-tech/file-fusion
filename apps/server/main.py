@@ -1,4 +1,5 @@
 import os
+
 from PyPDF2 import PdfMerger
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,6 +18,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/")
+async def root():
+    return {"message": "Api do FileFusion"}
+
 
 def merge_pdfs(input_folder, output_filename):
     pdf_files = [file for file in os.listdir(input_folder) if file.endswith('.pdf')]

@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Badge } from "./ui/badge";
 import { Separator } from "@radix-ui/react-separator";
 import { Button } from "./ui/button";
-import { LoaderCircle } from "lucide-react";
+import { LoaderCircle, Trash2 } from "lucide-react";
+import BtnRemoveMergedFile from "./btn-remove-merged-file";
 
 function SelectFile() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -10,17 +11,45 @@ function SelectFile() {
   const [loading, setLoading] = useState(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      setSelectedFiles(Array.from(event.target.files));
+    const files = event.target.files;
+
+    if (!files) return;
+
+    const existingFileNames = new Set(selectedFiles.map((file) => file.name));
+    const uniqueFiles = Array.from(files).filter(
+      (file) => !existingFileNames.has(file.name)
+    );
+
+    if (uniqueFiles.length > 0) {
+      setSelectedFiles((prevFiles) => [...prevFiles, ...uniqueFiles]);
+    } else {
+      console.log("Não pode adicionar arquivo com mesmo nome ou igual");
     }
+  };
+
+  const handleDrop = (event: React.DragEvent<HTMLLabelElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (event.dataTransfer.files) {
+      const files = event.dataTransfer.files;
+      handleFileChange({
+        target: { files },
+      } as React.ChangeEvent<HTMLInputElement>);
+    }
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLLabelElement>) => {
+    event.preventDefault();
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     setLoading(true);
 
     event.preventDefault();
-    if (selectedFiles.length === 0) {
-      console.log("Selecione um arquivo primeiro!");
+    if (selectedFiles.length >= 0) {
+      console.log("Selecione um ou mais arquivo primeiro!");
+      setLoading(false);
       return;
     }
 
@@ -50,15 +79,19 @@ function SelectFile() {
     }
   };
 
+  const removeFile = (fileToRemove: File) => {
+    setSelectedFiles((prevFiles) =>
+      prevFiles.filter((file) => file !== fileToRemove)
+    );
+  };
+
   return (
     <>
       {loading ? (
         <div className="flex flex-col items-center justify-between w-11/12 py-6 border rounded-md gap-36 h-4/5">
           <div className="w-40 border rounded-sm h-60 bg-gradient-to-t dark:from-zinc-800 from-zinc-400 to-transparent animate-pulse"></div>
-
           <div className="flex flex-col items-center">
             <LoaderCircle className="w-12 h-12 animate-spin" />
-
             <h2 className="text-4xl">Preparando arquivo</h2>
           </div>
         </div>
@@ -75,17 +108,19 @@ function SelectFile() {
           <label
             htmlFor="files"
             className="relative flex flex-col items-center justify-center gap-2 text-2xl border border-dashed rounded-md cursor-pointer h-44 text-muted-foreground hover:bg-primary/5"
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
           >
             {selectedFiles.length > 0 ? (
               <>
-                Selecione mais (clique aqui)
+                Selecione ou arraste mais (clique aqui)
                 <Badge variant="secondary" className="px-6 text-lg">
                   Total: {selectedFiles.length}
                 </Badge>
               </>
             ) : (
               <>
-                Selecione os arquivos de até
+                Selecione ou arraste os arquivos de até
                 <Badge variant="secondary" className="px-8 text-xl">
                   3 MB
                 </Badge>
@@ -96,15 +131,26 @@ function SelectFile() {
           {selectedFiles.length > 0 && (
             <>
               <Separator className="my-10 bg-border h-[1px]" />
-
-              <div className="grid items-center justify-center w-full gap-8 py-10 border rounded-md">
-                <ul className="flex flex-wrap w-4/5 gap-10 m-auto">
+              <div className="relative grid items-center justify-center w-full gap-8 py-10 border rounded-md">
+                <BtnRemoveMergedFile
+                  setMergedFile={setMergedFile}
+                  setSelectedFiles={setSelectedFiles}
+                />
+                <ul className="flex flex-wrap gap-10 m-auto">
                   {selectedFiles.map((file, index) => (
                     <li
                       key={index}
-                      className="relative flex flex-col items-center w-40 rounded-sm h-60"
+                      className="relative flex flex-col items-center w-40 h-64 rounded-sm"
                     >
-                      <span className="absolute text-sm">{file.name}</span>
+                      <span className="w-full p-1 text-sm text-center rounded bg-primary-foreground">
+                        {file.name}
+                      </span>
+                      <span
+                        className="absolute p-1 bg-red-600 rounded-full shadow-md cursor-pointer -top-2 -right-2 hover"
+                        onClick={() => removeFile(file)}
+                      >
+                        <Trash2 />
+                      </span>
                       <iframe
                         src={`${URL.createObjectURL(file)}#page=1`}
                         className="w-full h-full"
@@ -123,7 +169,11 @@ function SelectFile() {
           )}
         </form>
       ) : (
-        <div className="flex flex-col justify-center w-11/12 gap-32 py-8 border rounded-md h-4/5">
+        <div className="relative flex flex-col justify-center w-11/12 gap-32 py-8 border rounded-md h-4/5">
+          <BtnRemoveMergedFile
+            setMergedFile={setMergedFile}
+            setSelectedFiles={setSelectedFiles}
+          />
           <div className="flex flex-col items-center justify-center m-auto text-center">
             <iframe
               id="mergedFile"
