@@ -7,13 +7,9 @@ function Nav() {
   return (
     <nav className="flex items-center justify-between px-6 py-3 border-b">
       <a href="/" className="flex items-center gap-2">
+        <img src="/assets/svg/Icon.svg" alt="logo" className="dark:hidden" />
         <img
-          src="./public/assets/svg/Icon.svg"
-          alt="logo"
-          className="dark:hidden"
-        />
-        <img
-          src="./public/assets/svg/Icon-dark.svg"
+          src="/assets/svg/Icon-dark.svg"
           alt="logo"
           className="hidden dark:block"
         />
