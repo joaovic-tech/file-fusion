@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -54,16 +54,34 @@ def merge_pdfs(input_folder, output_filename):
 
 @app.post("/upload")
 async def upload_file(files: list[UploadFile] = File(...)):
-    for file in files:
-        file_location = f"{UPLOAD_DIR}/{file.filename}"
-        with open(file_location, "wb+") as file_object:
-            file_object.write(file.file.read())
+    try:
+        # Verifica se a lista de arquivos está vazia
+        if not files:
+            raise HTTPException(status_code=400, detail="Nenhum arquivo enviado.")
 
-    output_filename = f"{UPLOAD_DIR}/arquivo_mesclado.pdf"
-    if os.path.exists(output_filename):
-        os.remove(output_filename)
-    merge_pdfs(UPLOAD_DIR, output_filename)
+        # Salva os arquivos recebidos
+        for file in files:
+            file_location = f"{UPLOAD_DIR}/{file.filename}"
+            with open(file_location, "wb+") as file_object:
+                file_object.write(file.file.read())
 
-    return FileResponse(
-        output_filename, media_type="application/pdf", filename="arquivo_mesclado.pdf"
-    )
+        output_filename = f"{UPLOAD_DIR}/arquivo_mesclado.pdf"
+
+        # Remove o arquivo de saída se já existir
+        if os.path.exists(output_filename):
+            os.remove(output_filename)
+
+        # Mescla os PDFs
+        merge_pdfs(UPLOAD_DIR, output_filename)
+
+        return FileResponse(
+            output_filename,
+            media_type="application/pdf",
+            filename="arquivo_mesclado.pdf",
+        )
+    except HTTPException as http_exc:
+        # Retorna erros HTTP específicos
+        raise http_exc
+    except Exception as e:
+        # Retorna um erro genérico para outras exceções
+        return {"error": f"Ocorreu um erro: {str(e)}"}
