@@ -6,7 +6,10 @@ export default function ServerStatus() {
   useEffect(() => {
     const serverOn = async () => {
       try {
-        const response = await fetch("https://file-fusion-server.vercel.app");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}`, {
+          method: "GET",
+        });
+
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
