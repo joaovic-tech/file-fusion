@@ -6,7 +6,19 @@ import { ModeToggle } from "./mode-toggle";
 function Nav() {
   return (
     <nav className="flex items-center justify-between px-6 py-3 border-b">
-      <h1 className="text-xl font-bold">FileFusion</h1>
+      <a href="/" className="flex items-center gap-2">
+        <img
+          src="../../public/assets/svg/Icon.svg"
+          alt="logo"
+          className="dark:hidden"
+        />
+        <img
+          src="../../public/assets/svg/Icon-dark.svg"
+          alt="logo"
+          className="hidden dark:block"
+        />
+        <h1 className="text-xl font-bold">FileFusion</h1>
+      </a>
 
       <div className="flex items-center gap-3">
         <span className="flex items-center gap-2 text-sm text-muted-foreground">

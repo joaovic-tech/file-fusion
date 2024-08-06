@@ -11,10 +11,6 @@ export default function ServerStatus() {
           throw new Error("Network response was not ok");
         }
 
-        response.json().then((text) => {
-          console.log(text.message);
-        });
-
         setServerStatus("Online");
       } catch (error) {
         setServerStatus("Offline");
