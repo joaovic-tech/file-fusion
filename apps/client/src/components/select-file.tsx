@@ -64,11 +64,11 @@ function SelectFile() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     setLoading(true);
-
     event.preventDefault();
+
     if (selectedFiles.length <= 1) {
       setAlertMessage({
-        text: "Selecione um ou mais arquivo primeiro!",
+        text: "Selecione um ou mais arquivos primeiro!",
         type: "error",
       });
       setLoading(false);
@@ -89,17 +89,20 @@ function SelectFile() {
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
+
         setMergedFile(url);
         setAlertMessage({
           text: "Arquivo PDF mesclado com sucesso!",
           type: "success",
         });
       } else {
+        // Verifica o tipo de resposta de erro e mostra detalhes se disponíveis
+        const errorData = await response.json();
         setAlertMessage({
-          text: "Desculpe, algo deu errado no upload!",
+          text: errorData.error || "Desculpe, algo deu errado no upload!",
           type: "error",
         });
-        console.error("Falha no upload dos arquivos");
+        console.error("Falha no upload dos arquivos:", errorData);
       }
     } catch (error) {
       setAlertMessage({
