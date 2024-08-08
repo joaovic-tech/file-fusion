@@ -5,7 +5,7 @@ Projeto para unir múltiplos arquivos PDF em um único arquivo, utilizando uma a
 ## Objetivo Principal
 
 - Agrupar certos arquivos em formato PDF em um único arquivo PDF.
-- Aprender conceitos de integração de linguagens
+- Aprender conceitos de integração de linguagens nesse casso Typescript/Javascript + Python.
 
 ## Stacks que serão Utilizadas
 
@@ -19,9 +19,7 @@ Projeto para unir múltiplos arquivos PDF em um único arquivo, utilizando uma a
 
 1. **Python:** Linguagem de programação utilizada para desenvolver a lógica do backend.
 2. **FastAPI:** Framework web em Python para construção de APIs.
-3. **SQLAlchemy:** Biblioteca em Python para interação com bancos de dados SQL de forma orientada a objetos.
-4. **pip:** Gerenciador de pacotes para instalação de dependências Python.
-5. **PdfMerger:** Biblioteca Python para mesclar arquivos PDF.
+3. **PdfMerger:** Biblioteca Python para mesclar arquivos PDF.
 
 ### Além das tecnologias específicas para o frontend e o backend, o projeto utilizará:
 
