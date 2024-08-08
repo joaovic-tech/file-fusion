@@ -3,8 +3,8 @@ import { Badge } from "./ui/badge";
 import { Separator } from "@radix-ui/react-separator";
 import { Button } from "./ui/button";
 import { LoaderCircle, Trash2 } from "lucide-react";
-import BtnRemoveMergedFile from "./btn-remove-merged-file";
 import Message from "./message";
+import CancelMerge from "./cancel-merge";
 
 function SelectFile() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -26,36 +26,86 @@ function SelectFile() {
     }
   }, [alertMessage]);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-
-    if (!files) return;
-
+  const verifyFiles = async (files: FileList) => {
+    const newFiles = Array.from(files);
     const existingFileNames = new Set(selectedFiles.map((file) => file.name));
-    const uniqueFiles = Array.from(files).filter(
-      (file) => !existingFileNames.has(file.name)
+    const maxFileSize = 3000000; // 3 MB
+    const maxFileCount = 10; // Limite de arquivos
+
+    // Verificar o número de arquivos
+    if (newFiles.length + selectedFiles.length > maxFileCount) {
+      setAlertMessage({
+        text: `Não pode adicionar mais de ${maxFileCount} arquivos`,
+        type: "error",
+      });
+      return false;
+    }
+
+    // Verificar duplicatas e validações de arquivo
+    const sameFiles = newFiles.filter((file) =>
+      existingFileNames.has(file.name)
     );
 
-    if (uniqueFiles.length > 0) {
-      setSelectedFiles((prevFiles) => [...prevFiles, ...uniqueFiles]);
-    } else {
+    // Verificar se os arquivos são PDFs válidos
+    for (const file of newFiles) {
+      if (file.type !== "application/pdf") {
+        setAlertMessage({
+          text: "Somente arquivo no formato PDF",
+          type: "error",
+        });
+        return false;
+      }
+
+      if (file.size > maxFileSize) {
+        setAlertMessage({
+          text: "Arquivo muito grande!! (max: 3MB)",
+          type: "error",
+        });
+        return false;
+      }
+
+      if (file.name.length > 255) {
+        setAlertMessage({
+          text: "Nome do arquivo muito longo",
+          type: "error",
+        });
+        return false;
+      }
+    }
+
+    if (sameFiles.length > 0) {
       setAlertMessage({
         text: "Não pode adicionar arquivo com mesmo nome ou igual",
         type: "error",
       });
+      return false;
     }
+
+    return true;
   };
 
-  const handleDrop = (event: React.DragEvent<HTMLLabelElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = event.target.files;
 
-    if (event.dataTransfer.files) {
-      const files = event.dataTransfer.files;
-      handleFileChange({
-        target: { files },
-      } as React.ChangeEvent<HTMLInputElement>);
-    }
+    if (!files) return;
+
+    const isValid = await verifyFiles(files);
+    if (!isValid) return;
+
+    setSelectedFiles((prevFiles) => [...prevFiles, ...Array.from(files)]);
+  };
+
+  const handleDrop = async (event: React.DragEvent<HTMLLabelElement>) => {
+    event.preventDefault();
+
+    const files = event.dataTransfer.files;
+
+    const isValid = await verifyFiles(files);
+    if (!isValid) return;
+
+    setSelectedFiles((prevFiles) => [...prevFiles, ...Array.from(files)]);
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLLabelElement>) => {
@@ -65,15 +115,6 @@ function SelectFile() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     setLoading(true);
     event.preventDefault();
-
-    if (selectedFiles.length <= 1) {
-      setAlertMessage({
-        text: "Selecione um ou mais arquivos primeiro!",
-        type: "error",
-      });
-      setLoading(false);
-      return;
-    }
 
     const formData = new FormData();
     selectedFiles.forEach((file) => {
@@ -96,7 +137,6 @@ function SelectFile() {
           type: "success",
         });
       } else {
-        // Verifica o tipo de resposta de erro e mostra detalhes se disponíveis
         const errorData = await response.json();
         setAlertMessage({
           text: errorData.error || "Desculpe, algo deu errado no upload!",
@@ -117,7 +157,7 @@ function SelectFile() {
 
   const removeFile = (fileToRemove: File) => {
     setSelectedFiles((prevFiles) =>
-      prevFiles.filter((file) => file !== fileToRemove)
+      prevFiles.filter((file) => file.name !== fileToRemove.name)
     );
   };
 
@@ -171,7 +211,7 @@ function SelectFile() {
             <>
               <Separator className="my-10 bg-border h-[1px]" />
               <div className="relative flex flex-col items-center justify-center w-full gap-8 p-10 border rounded-md">
-                <BtnRemoveMergedFile
+                <CancelMerge
                   setMergedFile={setMergedFile}
                   setSelectedFiles={setSelectedFiles}
                 />
@@ -206,7 +246,7 @@ function SelectFile() {
         </form>
       ) : (
         <div className="relative flex flex-col justify-center w-11/12 gap-32 py-8 border rounded-md h-4/5">
-          <BtnRemoveMergedFile
+          <CancelMerge
             setMergedFile={setMergedFile}
             setSelectedFiles={setSelectedFiles}
           />

@@ -1,12 +1,12 @@
 import { RotateCcw } from "lucide-react";
 
 // Defina os tipos das props
-interface BtnRemoveMergedFileProps {
+interface CancelMergeProps {
   setMergedFile: React.Dispatch<React.SetStateAction<string | null>>;
   setSelectedFiles: React.Dispatch<React.SetStateAction<File[]>>;
 }
 
-const BtnRemoveMergedFile: React.FC<BtnRemoveMergedFileProps> = ({
+const CancelMerge: React.FC<CancelMergeProps> = ({
   setMergedFile,
   setSelectedFiles,
 }) => {
@@ -26,4 +26,4 @@ const BtnRemoveMergedFile: React.FC<BtnRemoveMergedFileProps> = ({
   );
 };
 
-export default BtnRemoveMergedFile;
+export default CancelMerge;
