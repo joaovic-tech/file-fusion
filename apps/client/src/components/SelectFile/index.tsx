@@ -131,7 +131,7 @@ function SelectFile() {
         responseType: "blob", // Especifica que a resposta deve ser tratada como um blob
       });
 
-      if (response.statusText) {
+      if (response.status === 200) {
         const blob = response.data;
         const url = window.URL.createObjectURL(blob);
 
