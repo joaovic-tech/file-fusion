@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Badge } from "./ui/badge";
+import { Badge } from "../ui/badge";
 import { Separator } from "@radix-ui/react-separator";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { LoaderCircle, Trash2 } from "lucide-react";
-import Message from "./message";
-import CancelMerge from "./cancel-merge";
+import Message from "../message";
+import CancelMerge from "../cancel-merge";
+import PdfIsValid from "./pdfIsValid";
+import { api } from "@/lib/axios";
 
 function SelectFile() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -29,8 +31,8 @@ function SelectFile() {
   const verifyFiles = async (files: FileList) => {
     const newFiles = Array.from(files);
     const existingFileNames = new Set(selectedFiles.map((file) => file.name));
-    const maxFileSize = 3000000; // 3 MB
-    const maxFileCount = 10; // Limite de arquivos
+    const maxFileSize = 3000000; // tamanho máximo de cada arquivo - 3 MB
+    const maxFileCount = 10; // Limite de arquivos para merge
 
     // Verificar o número de arquivos
     if (newFiles.length + selectedFiles.length > maxFileCount) {
@@ -48,23 +50,26 @@ function SelectFile() {
 
     // Verificar se os arquivos são PDFs válidos
     for (const file of newFiles) {
+      const isValid = await PdfIsValid(file);
       if (file.type !== "application/pdf") {
         setAlertMessage({
           text: "Somente arquivo no formato PDF",
           type: "error",
         });
         return false;
-      }
-
-      if (file.size > maxFileSize) {
+      } else if (!isValid) {
+        setAlertMessage({
+          text: "Arquivo está corrompido!",
+          type: "error",
+        });
+        return false;
+      } else if (file.size > maxFileSize) {
         setAlertMessage({
           text: "Arquivo muito grande!! (max: 3MB)",
           type: "error",
         });
         return false;
-      }
-
-      if (file.name.length > 255) {
+      } else if (file.name.length > 50) {
         setAlertMessage({
           text: "Nome do arquivo muito longo",
           type: "error",
@@ -75,7 +80,7 @@ function SelectFile() {
 
     if (sameFiles.length > 0) {
       setAlertMessage({
-        text: "Não pode adicionar arquivo com mesmo nome ou igual",
+        text: "Não pode adicionar arquivo com mesmo nome",
         type: "error",
       });
       return false;
@@ -122,13 +127,12 @@ function SelectFile() {
     });
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/upload`, {
-        method: "POST",
-        body: formData,
+      const response = await api.post("/upload", formData, {
+        responseType: "blob", // Especifica que a resposta deve ser tratada como um blob
       });
 
-      if (response.ok) {
-        const blob = await response.blob();
+      if (response.statusText) {
+        const blob = response.data;
         const url = window.URL.createObjectURL(blob);
 
         setMergedFile(url);
@@ -137,9 +141,10 @@ function SelectFile() {
           type: "success",
         });
       } else {
-        const errorData = await response.json();
+        // Se o status não for 200, trata como erro
+        const errorData = await response.data.text(); // Para lidar com a resposta de erro como texto
         setAlertMessage({
-          text: errorData.error || "Desculpe, algo deu errado no upload!",
+          text: errorData || "Desculpe, algo deu errado no upload!",
           type: "error",
         });
         console.error("Falha no upload dos arquivos:", errorData);

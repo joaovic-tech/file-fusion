@@ -1,5 +1,5 @@
 import Nav from "./components/nav";
-import SelectFile from "./components/select-file";
+import SelectFile from "./components/SelectFile";
 
 function App() {
   return (

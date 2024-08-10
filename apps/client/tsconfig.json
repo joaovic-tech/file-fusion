@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "typeRoots": [
+      "node_modules/@types",
+      "node_modules/pdfjs-dist/types"
+    ],
     "target": "ES2020",
     "useDefineForClassFields": true,
     "lib": [
