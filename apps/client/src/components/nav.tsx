@@ -17,12 +17,12 @@ function Nav() {
       </a>
 
       <div className="flex items-center gap-3">
-        <span className="flex items-center gap-2 text-sm text-muted-foreground">
+        <span className="flex items-center gap-2 text-xl max-lg:hidden sm:text-sm text-muted-foreground">
           Acesse o meu perfil do Github ao lado
           <ArrowRight />
         </span>
 
-        <Separator orientation="vertical" className="h-6" />
+        <Separator orientation="vertical" className="h-6 max-lg:hidden" />
 
         <a href="http://github.com/joaovic-tech/" target="_blank">
           <Button variant="outline">

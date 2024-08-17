@@ -17,7 +17,7 @@ export default function Message({
   return (
     <div
       key={text} // Adiciona a key para garantir a re-renderização
-      className={`message ${
+      className={`${
         typeMessage === "success" ? "text-green-500" : "text-red-500"
       } backdrop-blur-sm bg-zinc-950/30 p-4 mb-4 rounded fixed top-0 right-0 z-40 flex gap-2 font-bold`}
     >

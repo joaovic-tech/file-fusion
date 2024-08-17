@@ -219,7 +219,7 @@ function SelectFile() {
           />
           <label
             htmlFor="files"
-            className="relative flex flex-col items-center justify-center gap-2 text-2xl border border-dashed rounded-md cursor-pointer h-44 text-muted-foreground hover:bg-primary/5"
+            className="relative flex flex-col items-center justify-center gap-2 text-2xl border border-dashed rounded-md cursor-pointer max-sm:text-xl h-44 text-muted-foreground hover:bg-primary/5"
             onDrop={handleDrop}
             onDragOver={handleDragOver}
           >
