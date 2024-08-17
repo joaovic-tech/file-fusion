@@ -134,6 +134,8 @@ function SelectFile() {
       formData.append("files", file);
     });
 
+    console.log(import.meta.env.VITE_API_URL);
+
     try {
       const response = await api.post("/upload", formData, {
         responseType: "blob", // Especifica que a resposta deve ser tratada como um blob
