@@ -7,6 +7,7 @@ import Message from "../message";
 import CancelMerge from "../cancel-merge";
 import PdfIsValid from "./pdfIsValid";
 import { api } from "@/lib/axios";
+import { AxiosError } from "axios";
 
 function SelectFile() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -19,13 +20,20 @@ function SelectFile() {
 
   // Limpa a mensagem após a animação de saída
   useEffect(() => {
+    // Define o temporizador
+    let timer: NodeJS.Timeout;
+
     if (alertMessage) {
-      const timer = setTimeout(() => {
+      // Define o temporizador para limpar a mensagem após 5 segundos
+      timer = setTimeout(() => {
         setAlertMessage(null);
       }, 5000);
-
-      return () => clearTimeout(timer);
     }
+
+    // Limpa o temporizador quando o componente desmonta ou a mensagem muda
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, [alertMessage]);
 
   const verifyFiles = async (files: FileList) => {
@@ -149,12 +157,32 @@ function SelectFile() {
         });
         console.error("Falha no upload dos arquivos:", errorData);
       }
-    } catch (error) {
-      setAlertMessage({
-        text: "Desculpe, algo deu errado no upload!",
-        type: "error",
-      });
-      console.error("Erro ao enviar arquivos:", error);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        const messageError = error.response?.data.detail ?? "Ocorreu um erro.";
+
+        if (messageError) {
+          setAlertMessage({
+            text: messageError,
+            type: "error",
+          });
+          console.error(messageError);
+        } else if (error.request) {
+          setAlertMessage({
+            text: "Nenhuma resposta recebida do servidor, Tente novamente mais tarde!",
+            type: "error",
+          });
+          console.error("Nenhuma resposta recebida:", error.request);
+        } else {
+          setAlertMessage({
+            text: "Erro ao configurar a requisição, Tente novamente mais tarde!",
+            type: "error",
+          });
+          console.error("Erro ao configurar a requisição:", error.message);
+        }
+      } else {
+        console.error("Erro desconhecido:", error);
+      }
     } finally {
       setLoading(false);
     }

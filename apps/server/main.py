@@ -27,6 +27,11 @@ async def upload_pdf(files: list[UploadFile] = File(...)):
         # Inicializa o PdfMerger
         merger = PdfMerger()
 
+        if len(files) <= 1:
+            raise HTTPException(
+                status_code=400, detail="Deve ser enviado pelo menos um arquivo."
+            )
+
         for file in files:
             if file.content_type != "application/pdf":
                 raise HTTPException(
