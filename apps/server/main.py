@@ -6,15 +6,16 @@ from fastapi.responses import StreamingResponse
 
 app = FastAPI()
 
+origins = ["*"]
+
 # Configuração de CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 @app.get("/")
 async def root():
